@@ -1,0 +1,91 @@
+.captcha-container {
+  max-width: 700px;
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.question {
+  font-size: 1.2rem;
+  margin-bottom: 25px;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.image-card {
+  position: relative;
+  padding: 0;
+  border: 3px solid transparent;
+  background: none;
+  cursor: pointer;
+  overflow: hidden;
+  aspect-ratio: 1;
+}
+
+.image-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.image-card.selected {
+  border-color: #ff4d00;
+}
+
+.check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+
+  width: 30px;
+  height: 30px;
+
+  border-radius: 50%;
+
+  background: #ff4d00;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bold;
+}
+
+.verify-button {
+  margin-top: 25px;
+  padding: 12px 30px;
+
+  border: none;
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+.message {
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.success {
+  color: green;
+}
+
+.error {
+  color: red;
+}
+
+@media (max-width: 600px) {
+  .captcha-container {
+    margin: 20px auto;
+  }
+
+  .image-grid {
+    gap: 5px;
+  }
+}

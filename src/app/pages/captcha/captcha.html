@@ -1,0 +1,63 @@
+<div class="captcha-container">
+
+  <h1>Angul-It</h1>
+
+  <p class="question">
+    {{ challenge.question }}
+  </p>
+
+  <div class="image-grid">
+
+    @for (image of images; track image.id) {
+
+      <button
+        type="button"
+        class="image-card"
+        [class.selected]="isSelected(image)"
+        (click)="selectImage(image)"
+      >
+
+        <img
+          [src]="image.url"
+          alt="CAPTCHA image"
+        >
+
+        @if (isSelected(image)) {
+          <span class="check">✓</span>
+        }
+
+      </button>
+
+    }
+
+  </div>
+
+  <button
+    type="button"
+    class="verify-button"
+    (click)="verify()"
+  >
+    Verify
+  </button>
+
+  @if (message) {
+    <p
+      class="message"
+      [class.success]="success"
+      [class.error]="!success"
+    >
+      {{ message }}
+    </p>
+  }
+
+  @if (success) {
+    <button
+      type="button"
+      class="next-button"
+      (click)="newLevel()"
+    >
+      Next Level
+    </button>
+  }
+
+</div>
