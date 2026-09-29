@@ -1,63 +1,118 @@
 <div class="captcha-container">
 
-  <h1>Angul-It</h1>
-
-  <p class="question">
-    {{ challenge.question }}
-  </p>
-
-  <div class="image-grid">
-
-    @for (image of images; track image.id) {
-
-      <button
-        type="button"
-        class="image-card"
-        [class.selected]="isSelected(image)"
-        (click)="selectImage(image)"
+  <!-- ── Stage progress bar ──────────────────────────────────────────── -->
+  <div class="stage-bar">
+    @for (n of [0, 1, 2]; track n) {
+      <div
+        class="stage-dot"
+        [class.active]="svc.stage() === n"
+        [class.done]="svc.stageIsDone(n)"
       >
-
-        <img
-          [src]="image.url"
-          alt="CAPTCHA image"
-        >
-
-        @if (isSelected(image)) {
-          <span class="check">✓</span>
-        }
-
-      </button>
-
+        @if (svc.stageIsDone(n)) { ✓ } @else { {{ n + 1 }} }
+      </div>
     }
-
   </div>
 
-  <button
-    type="button"
-    class="verify-button"
-    (click)="verify()"
-  >
-    Verify
-  </button>
+  <p class="stage-label">Stage {{ svc.stage() + 1 }} of 3</p>
 
-  @if (message) {
-    <p
-      class="message"
-      [class.success]="success"
-      [class.error]="!success"
-    >
-      {{ message }}
-    </p>
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- STAGE 1 — Select all cats                                         -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  @if (svc.stage() === 0) {
+    <h2 class="question">Select all images containing <em>cats</em></h2>
+
+    <div class="image-grid">
+      @for (img of svc.grid; track img.id) {
+        <button
+          type="button"
+          class="image-card"
+          [class.selected]="isSelected(img)"
+          (click)="toggleImage(img)"
+        >
+          <img [src]="img.url" alt="captcha tile" />
+          @if (isSelected(img)) {
+            <span class="check-mark">✓</span>
+          }
+        </button>
+      }
+    </div>
   }
 
-  @if (success) {
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- STAGE 2 — Type the distorted text                                 -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  @if (svc.stage() === 1) {
+    <h2 class="question">Type the characters you see in the image</h2>
+
+    <div class="sample-box">
+      <img [src]="svc.sample().url" alt="captcha text" class="sample-img" />
+    </div>
+
+    <input
+      class="text-input"
+      type="text"
+      [(ngModel)]="typedText"
+      placeholder="Enter the characters..."
+      autocomplete="off"
+      spellcheck="false"
+    />
+  }
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- STAGE 3 — Solve the equation                                      -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  @if (svc.stage() === 2) {
+    <h2 class="question">Solve the equation</h2>
+
+    <div class="equation-box">
+      {{ svc.math().a }} + {{ svc.math().b }} = ?
+    </div>
+
+    <input
+      class="text-input"
+      type="number"
+      [(ngModel)]="typedAnswer"
+      placeholder="Your answer..."
+      min="0"
+      max="200"
+    />
+  }
+
+  <!-- ── Feedback message ─────────────────────────────────────────────── -->
+  @if (message) {
+    <div class="message-box" [class.success]="isSuccess" [class.error]="!isSuccess">
+      {{ message }}
+    </div>
+  }
+
+  <!-- ── Action buttons ───────────────────────────────────────────────── -->
+  <div class="actions-row">
     <button
       type="button"
-      class="next-button"
-      (click)="newLevel()"
+      class="btn btn-secondary"
+      [disabled]="!svc.canGoBack()"
+      (click)="goBack()"
     >
-      Next Level
+      ← Previous
     </button>
-  }
+
+    <button type="button" class="btn btn-primary" (click)="verify()">
+      Verify
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-action"
+      [disabled]="!currentStageDone"
+      (click)="goNext()"
+    >
+      {{ isLastStage ? 'View Results →' : 'Next →' }}
+    </button>
+  </div>
+
+  <!-- ── Back to home ─────────────────────────────────────────────────── -->
+  <div class="home-link-container">
+    <button type="button" class="btn-link" (click)="goHome()">← Back to Home</button>
+  </div>
 
 </div>

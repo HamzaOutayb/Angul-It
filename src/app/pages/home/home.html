@@ -1,11 +1,20 @@
-<main class="home">
-  <h1>Angul-It</h1>
+<!--
+  Home Component Template
+  Entry point of Angul-It where users are introduced to the verification challenge.
+  Clicking 'Start Challenge' triggers `startChallenge()` which routes to `/captcha`.
+-->
+<div class="home-container">
+  <div class="home-card">
+    <h1 class="title">Angul-It</h1>
+    <p class="description">
+      Welcome to Angul-It, an interactive multi-stage CAPTCHA verification system. Complete the
+      image challenges to prove you are human.
+    </p>
 
-  <p>
-    Complete a series of challenges to prove you're human.
-  </p>
-
-  <button (click)="startChallenge()">
-    Start Challenge
-  </button>
-</main>
+    <div class="actions">
+      <button type="button" class="btn btn-primary" (click)="startChallenge()">
+        Start Challenge →
+      </button>
+    </div>
+  </div>
+</div>

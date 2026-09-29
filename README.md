@@ -1,59 +1,130 @@
-# AngulIt
+# Angul-It — Image CAPTCHA App
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.0.
+A multi-stage image-selection CAPTCHA built with **Angular 18** (signals, standalone components).
 
-## Development server
+---
 
-To start a local development server, run:
+## How It Works — Step by Step
+
+### 1. App starts → `HomeComponent`
+The user lands on the home page and clicks **Start Challenge**.  
+This navigates to `/captcha`.
+
+---
+
+### 2. Session is created → `CaptchaService`
+When `CaptchaService` loads, it checks `localStorage` for a saved session.
+
+- **Found?** → restore it (so progress survives a page reload).
+- **Not found?** → call `createNewSession()`.
+
+A new session generates **3 challenges** (cat → dog → car), each with:
+- **3 correct images** randomly picked from the target category.
+- **6 distractor images** picked from the other categories.
+- All 9 images shuffled into random positions.
+
+The session is saved to `localStorage` after every state change.
+
+---
+
+### 3. User completes a stage → `CaptchaComponent`
+
+```
+User sees a 3×3 grid of images
+        ↓
+User clicks tiles to toggle selection  (toggleImage)
+        ↓
+User clicks "Verify"                   (verify)
+        ↓
+Service checks: selected IDs == correct IDs?
+  ✓ Yes → stage marked completed, show success message
+  ✗ No  → show error message, let user try again
+        ↓
+User clicks "Next →"                   (goNext)
+  → service moves to next stage, local state is reset
+```
+
+Each tile click calls `toggleImage(image)`:
+- Image already in `selectedIds`? → remove it.
+- Not in there? → add it.
+
+---
+
+### 4. Verification logic → `CaptchaService.verifyCurrentStage()`
+
+```
+1. Record the selected IDs and increment attempt count.
+2. Find the correct IDs: images whose category === targetCategory.
+3. Pass if:  selectedIds.length === correctIds.length
+         AND every correctId is in selectedIds
+4. Mark stage completed (or not) and save session.
+5. Return { success, message } to the component.
+```
+
+---
+
+### 5. Navigation rules
+
+| Button               | Enabled when                          | What it does                 |
+|----------------------|---------------------------------------|------------------------------|
+| **Previous**         | not on stage 1                        | go back one stage            |
+| **Verify**           | always                                | check the current selection  |
+| **Next →**           | current stage is completed (✓ Solved) | advance to next stage        |
+| **View Results →**   | last stage completed                  | navigate to `/result`        |
+
+You can freely go **back** to any earlier stage.  
+You can only go **forward** if the current stage is solved.
+
+---
+
+### 6. All stages done → `ResultComponent`
+
+Protected by `resultGuard` — if you try to visit `/result` directly without finishing, you are redirected to `/captcha`.
+
+The result page shows:
+- ✅ Stages completed / total.
+- 🔢 Total verification attempts across all stages.
+- ⏱ Time taken from start to finish.
+
+---
+
+## Project Structure
+
+```
+src/app/
+├── pages/
+│   ├── home/              # Landing page
+│   ├── captcha/           # CAPTCHA challenge UI (component + template + styles)
+│   └── result/            # Completion summary page
+├── services/
+│   └── captcha.ts         # All state, session, and verification logic
+├── models/
+│   ├── captcha.types.ts   # TypeScript interfaces
+│   └── captcha-data.ts    # Image catalog (dogs, cats, cars, trucks)
+├── guards/
+│   └── result.guard.ts    # Blocks /result unless all stages are done
+└── app.routes.ts          # Route definitions
+```
+
+---
+
+## Key Concepts Used
+
+| Concept | Where |
+|---|---|
+| Angular Signals | `CaptchaService` — reactive state with `signal()` and `computed()` |
+| Standalone Components | All components use `standalone: true` |
+| `localStorage` | Session persisted so page refresh doesn't lose progress |
+| Route Guard | `resultGuard` protects the `/result` page |
+| Fisher-Yates shuffle | Randomises image order in every challenge |
+
+---
+
+## Run Locally
 
 ```bash
+npm install
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Then open [http://localhost:4200](http://localhost:4200).

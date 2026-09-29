@@ -1,0 +1,42 @@
+/*
+ * Root Layout Styles (Black & White Theme)
+ * Provides full-height flex column layout with centered content area and minimal footer.
+ */
+
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1.5rem;
+}
+
+.app-footer {
+  border-top: 1px solid var(--border-color);
+  padding: 1.25rem 1.5rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  background: var(--bg-secondary);
+  letter-spacing: 0.03em;
+}
+
+@media (max-width: 640px) {
+  .app-main {
+    padding: 1rem 0.5rem;
+  }
+
+  .app-footer {
+    padding: 1rem;
+    font-size: 0.75rem;
+  }
+}

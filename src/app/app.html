@@ -1,4 +1,11 @@
-<a routerLink="/">Home</a>
-<a routerLink="/result">Results</a>
-<a routerLink="/captcha">Captcha</a>
-<router-outlet></router-outlet>
+<!--
+  App Root Layout:
+  Provides the global container and router outlet for Angul-It.
+  - <router-outlet>: Angular dynamically renders the active route component here (Home, Captcha, Result).
+  - <footer>: Global minimalist footer at the bottom of the page.
+-->
+<div class="app-layout">
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,1 +1,34 @@
-<p>result works!</p>
+<div class="result-container">
+  <div class="result-card">
+
+    <!-- Success icon -->
+    <div class="success-icon" aria-hidden="true">✓</div>
+
+    <h1 class="result-title">Verification Complete</h1>
+    <p class="result-subtitle">All 3 CAPTCHA challenges were successfully solved.</p>
+
+    <!-- Stage breakdown -->
+    <div class="breakdown">
+      <h3>Challenges Summary</h3>
+      <ul class="stages-list">
+        @for (s of stages; track s.label) {
+          <li class="stage-item">
+            <span class="stage-name">{{ s.label }}</span>
+            <span class="stage-status">✓ Solved</span>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button type="button" class="btn btn-primary" (click)="restart()">
+        Restart Challenge
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="goHome()">
+        Back to Home
+      </button>
+    </div>
+
+  </div>
+</div>
