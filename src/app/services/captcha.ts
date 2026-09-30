@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, effect } from '@angular/core';
 import {
   STAGE1_GRID,
   STAGE1_CORRECT_IDS,
@@ -55,9 +55,39 @@ export class CaptchaService {
     };
   }
 
+  private readonly STORAGE_KEY = 'angulit_captcha_state';
+
   // Main reactive state
-  private readonly _state = signal<CaptchaState>(this.freshState());
+  private readonly _state = signal<CaptchaState>(this.getInitialState());
   readonly state = this._state.asReadonly();
+
+  constructor() {
+    // Automatically save to localStorage whenever state changes
+    effect(() => {
+      const s = this._state();
+      if (typeof window !== 'undefined' && window.localStorage) {
+        try {
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(s));
+        } catch {}
+      }
+    });
+  }
+
+  // Load from localStorage or create fresh
+  private getInitialState(): CaptchaState {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        const saved = localStorage.getItem(this.STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved) as CaptchaState;
+          if (parsed && typeof parsed.stage === 'number') {
+            return parsed;
+          }
+        }
+      } catch {}
+    }
+    return this.freshState();
+  }
 
   // Convenient computed helpers for templates
   readonly stage         = computed(() => this._state().stage);

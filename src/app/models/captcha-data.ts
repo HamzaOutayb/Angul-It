@@ -1,11 +1,3 @@
-/**
- * Hardcoded CAPTCHA stage definitions.
- *
- * Stage 1 – Image selection: find all cats in a 3×3 grid.
- * Stage 2 – Text CAPTCHA: type the distorted text shown in an image.
- * Stage 3 – Math equation: solve a simple addition (random numbers 0–100).
- */
-
 // ─── Stage 1: Fixed 3×3 grid of images (3 cats + 6 distractors) ──────────────
 
 export interface GridImage {
